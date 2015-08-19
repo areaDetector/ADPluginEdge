@@ -88,7 +88,6 @@ void NDPluginEdge::processCallbacks(NDArray *pArray)
     int     i, j;
     unsigned int     numRows, rowSize;
     unsigned char *inData, *outData;
-    int    sensitivity;
     int    edge1;
     int    edge1Found;
     int    edge2;
@@ -116,12 +115,6 @@ void NDPluginEdge::processCallbacks(NDArray *pArray)
     
     getDoubleParam( NDPluginEdgeLowThreshold,   &lowThreshold);
     getDoubleParam( NDPluginEdgeThresholdRatio, &thresholdRatio);
-    getIntegerParam( NDPluginEdgeSensitivity,   &sensitivity);
-    if( sensitivity <= 0) {
-      sensitivity = 100;
-      setIntegerParam( NDPluginEdgeSensitivity, sensitivity);
-    }
-
 
     // We assume 8 bit mono image as input, at least for now.
 
@@ -140,17 +133,18 @@ void NDPluginEdge::processCallbacks(NDArray *pArray)
 
     dst = cv::Scalar::all(0);
     
-    img.copyTo( dst, detected_edges);
 	      
-    cv::imwrite( "/tmp/canny.png", dst);
+    cv::imwrite( "/tmp/canny.png", detected_edges);
+
+    //img.copyTo( dst, detected_edges);
 
     // Find top pixel
     j = rowSize/2;
     edge1Found = 0;
     edge2Found = 0;
-    outData = (unsigned char *)dst.data;
+    outData = (unsigned char *)detected_edges.data;
     for( i=0; (unsigned int)i<numRows; i++) {
-      if( *(outData + i*rowSize + j) >= sensitivity) {
+      if( *(outData + i*rowSize + j) != 0) {
 	edge1Found = 1;
 	break;
       }
@@ -163,7 +157,7 @@ void NDPluginEdge::processCallbacks(NDArray *pArray)
 
     // Maybe find bottom pixel
     for( i=numRows - 1; i>=0; i--) {
-      if( *(outData + i*rowSize + j) >= sensitivity) {
+      if( *(outData + i*rowSize + j) != 0) {
 	edge2Found = 1;
 	break;
       }
@@ -268,7 +262,6 @@ NDPluginEdge::NDPluginEdge(const char *portName, int queueSize, int blockingCall
     
   createParam( NDPluginEdgeLowThresholdString,     asynParamFloat64,  &NDPluginEdgeLowThreshold);
   createParam( NDPluginEdgeThresholdRatioString,   asynParamFloat64,  &NDPluginEdgeThresholdRatio);
-  createParam( NDPluginEdgeSensitivityString,      asynParamInt32,    &NDPluginEdgeSensitivity);
   createParam( NDPluginEdgeVerticalFoundString,    asynParamInt32,    &NDPluginEdgeVerticalFound);
   createParam( NDPluginEdgeTopEdgeFoundString,     asynParamInt32,    &NDPluginEdgeTopEdgeFound);
   createParam( NDPluginEdgeTopPixelString,         asynParamInt32,    &NDPluginEdgeTopPixel);

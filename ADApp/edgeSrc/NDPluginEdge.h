@@ -10,7 +10,6 @@
 /* Output data type */
 #define NDPluginEdgeLowThresholdString       "LOW_THRESHOLD"     /* (asynFloat32, r/w) Canny sensitivity	                  */
 #define NDPluginEdgeThresholdRatioString     "THRESHOLD_RATIO"   /* (asynFloat32, r/w) low threshold * ratio = high threshold   */
-#define NDPluginEdgeSensitivityString        "SENSITIVITY"       /* (asynInt32,   r/w) pixel value in canny image for edge      */
 #define NDPluginEdgeVerticalFoundString      "VERTICAL_FOUND"    /* (asynInt32,   r/o) 1 we found it, 0 not	                  */
 #define NDPluginEdgeTopEdgeFoundString       "TOP_EDGE_FOUND"    /* (asynInt32,   r/o) 1 we found it, 0 not	                  */
 #define NDPluginEdgeTopPixelString           "TOP_PIXEL"         /* (asynInt32,   r/o) index of pixel or -1 if not found        */
@@ -47,9 +46,6 @@ protected:
 
     /* threshold ratio (low * ratio = high, ratio is recommended to be 3)	*/
     int NDPluginEdgeThresholdRatio;
-
-    /* Pixel value in canny image that we'll consider as being an edge          */
-    int NDPluginEdgeSensitivity;
 
     /* 1 if vertical edge found (top and bottom found and are different		*/
     int NDPluginEdgeVerticalFound;

@@ -2,6 +2,7 @@
 # Keith Brister
 # November 20, 2014
 
+include "NDPluginBase.template"
 
 record( ao, "$(P)$(R)LowThreshold")
 {
@@ -29,20 +30,6 @@ record( ai, "$(P)$(R)ThresholdRatio_RBV")
 	field(INP,   "@asyn($(PORT),$(ADDR),$(TIMEOUT))THRESHOLD_RATIO")
 	field(SCAN,  "I/O Intr")
 }
-record( ao, "$(P)$(R)Sensitivity")
-{
-	field( PINI, "YES")
-	field( DTYP, "asynInt32")
-	field( OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))SENSITIVITY")
-	field( VAL,  "100")
-}
-record( ai, "$(P)$(R)Sensitivity_RBV")
-{
-	field( DTYP, "asynInt32")
-	field( INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT)SENSITIVITY")
-	field( SCAN, "I/O Intr")
-}
-
 record( bi, "$(P)$(R)VerticalFound")
 {
 	field(DTYP, "asynInt32")
