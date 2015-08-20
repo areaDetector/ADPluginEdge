@@ -108,7 +108,7 @@ void NDPluginEdge::processCallbacks(NDArray *pArray)
     numRows = pScratch->dims[arrayInfo.yDim].size;
 
     cv::Mat img = cv::Mat( numRows, rowSize, CV_8UC1);
-    cv::Mat dst;
+    // cv::Mat dst;
     cv::Mat detected_edges;
     double lowThreshold;
     double thresholdRatio;
@@ -124,19 +124,19 @@ void NDPluginEdge::processCallbacks(NDArray *pArray)
       outData[i] = inData[i];
     }
 
-    dst.create( img.size(), img.type());
+    // dst.create( img.size(), img.type());
 
     cv::blur( img, detected_edges, cv::Size(3,3));
 
 
     cv::Canny( detected_edges, detected_edges, lowThreshold, thresholdRatio * lowThreshold, 3);
 
-    dst = cv::Scalar::all(0);
+    // dst = cv::Scalar::all(0);
     
 	      
-    cv::imwrite( "/tmp/canny.png", detected_edges);
+    // img.copyTo( dst, detected_edges);
 
-    //img.copyTo( dst, detected_edges);
+    // cv::imwrite( "/tmp/canny.png", detected_edges);
 
     // Find top pixel
     j = rowSize/2;
