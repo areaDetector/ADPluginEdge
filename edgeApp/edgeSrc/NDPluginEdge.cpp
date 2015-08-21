@@ -128,6 +128,15 @@ void NDPluginEdge::processCallbacks(NDArray *pArray)
       // As suggested in the openCV examples, first slightly blur the image
       //
       cv::blur( img, detected_edges, cv::Size(3,3));
+    }
+    catch( cv::Exception &e) {
+      const char* err_msg = e.what();
+
+      asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, "NDPluginEdge cv::blur exception:  %s\n", err_msg);
+      return;
+    }
+
+    try {
       //
       // Here is the edge detection routine.
       //
@@ -135,7 +144,8 @@ void NDPluginEdge::processCallbacks(NDArray *pArray)
     }
     catch( cv::Exception &e) {
       const char* err_msg = e.what();
-      std::cout <<"NDPluginEdge openCV Exception: " <<err_msg <<std::endl;
+
+      asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, "NDPluginEdge cv::Canny exception:  %s\n", err_msg);
       return;
     }
 
