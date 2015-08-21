@@ -27,31 +27,33 @@ Additional information:
   Likewise, a horizontal line is drawn midway between the top and
   bottom edges of the image.
 
-- PVs
+- Input PVs
 
 PV                 |  Comment
 -------------------|---------
 LowThreshold       | Lower values increase the sensitivity of the detector
-LowThreshold_RBV   | Read back value
-                   |
 ThresholdRatio     | Sets the size of the hysteresis of the edge detector (2 to 3 are reasonable)
-ThresholdRatio_RBV | Read back value
-                   |
-TopPixel           | Location of the first edge from the top measured in pixels from the top edge
-TopEdgeFound       | Indicates that a top edge was found  (0 = No, 1 = Yes)
-BottomPixel        | Location of the first edge from the bottom measured in pixels from the top edge
+
+- Output PVs
+
+PV                 |  Comment
+-------------------|---------
 BottomEdgeFound    | Indicates that a bottom edge was found (0 = 0, 1 = Yes)
-VerticalCenter     | Average of TopPixel and BottomPixel
-VerticalSize       | Difference between BottomPixel and TopPixel
-VerticalFound      | Indicates that both a top pixel and a bottom pixel were found and they are not the same
-                   |
-LeftPixel          | Location of the first edge from the left measured in pixels from the left edge
-LeftEdgeFound      | Indicates that a left edge was found (0 = No, 1 = Yes)
-RightPixel         | Location of the first edge from the right measured in pixels from the left edge
-RightEdgeFound     | Indicates that a right edge was found (0 = No, 1 = Yes)
+BottomPixel        | Location of the first edge from the bottom measured in pixels from the top edge
 HorizontalCenter   | Average of the LeftPixel and RightPixel
-HorizontalSize     | Difference between RightPixel and LeftPixel
 HorizontalFound    | Indicates that both a left pixel and a right pixel were found and they are not the same
+HorizontalSize     | Difference between RightPixel and LeftPixel
+LeftEdgeFound      | Indicates that a left edge was found (0 = No, 1 = Yes)
+LeftPixel          | Location of the first edge from the left measured in pixels from the left edge
+LowThreshold_RBV   | Read back value for LowThreshold
+RightEdgeFound     | Indicates that a right edge was found (0 = No, 1 = Yes)
+RightPixel         | Location of the first edge from the right measured in pixels from the left edge
+ThresholdRatio_RBV | Read back value for ThresholdRatio
+TopEdgeFound       | Indicates that a top edge was found  (0 = No, 1 = Yes)
+TopPixel           | Location of the first edge from the top measured in pixels from the top edge
+VerticalCenter     | Average of TopPixel and BottomPixel
+VerticalFound      | Indicates that both a top pixel and a bottom pixel were found and they are not the same
+VerticalSize       | Difference between BottomPixel and TopPixel
 
 - Release notes.
   
