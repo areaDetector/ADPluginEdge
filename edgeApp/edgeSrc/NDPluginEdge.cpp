@@ -108,7 +108,7 @@ void NDPluginEdge::processCallbacks(NDArray *pArray)
     numRows = pScratch->dims[arrayInfo.yDim].size;
 
     cv::Mat img = cv::Mat( numRows, rowSize, CV_8UC1);
-    // cv::Mat dst;
+
     cv::Mat detected_edges;
     double lowThreshold;
     double thresholdRatio;
@@ -118,27 +118,28 @@ void NDPluginEdge::processCallbacks(NDArray *pArray)
 
     // We assume 8 bit mono image as input, at least for now.
 
+    // Initialize the output data array
+    //
     inData  = (unsigned char *)pScratch->pData;
     outData = (unsigned char *)img.data;
-    for( i=0; (unsigned int)i<arrayInfo.nElements; i++) {
-      outData[i] = inData[i];
+    memcpy( outData, inData, arrayInfo.nElements * sizeof( *inData));
+
+    try {
+      // As suggested in the openCV examples, first slightly blur the image
+      //
+      cv::blur( img, detected_edges, cv::Size(3,3));
+      //
+      // Here is the edge detection routine.
+      //
+      cv::Canny( detected_edges, detected_edges, lowThreshold, thresholdRatio * lowThreshold, 3);
+    }
+    catch( cv::Exception &e) {
+      const char* err_msg = e.what();
+      std::cout <<"NDPluginEdge openCV Exception: " <<err_msg <<std::endl;
+      return;
     }
 
-    // dst.create( img.size(), img.type());
-
-    cv::blur( img, detected_edges, cv::Size(3,3));
-
-
-    cv::Canny( detected_edges, detected_edges, lowThreshold, thresholdRatio * lowThreshold, 3);
-
-    // dst = cv::Scalar::all(0);
-    
-	      
-    // img.copyTo( dst, detected_edges);
-
-    // cv::imwrite( "/tmp/canny.png", detected_edges);
-
-    // Find top pixel
+    // Try to find the top pixel
     j = rowSize/2;
     edge1Found = 0;
     edge2Found = 0;
@@ -155,7 +156,7 @@ void NDPluginEdge::processCallbacks(NDArray *pArray)
     if( edge1Found)
       setIntegerParam( NDPluginEdgeTopPixel, edge1);
 
-    // Maybe find bottom pixel
+    // Maybe find the bottom pixel
     for( i=numRows - 1; i>=0; i--) {
       if( *(outData + i*rowSize + j) != 0) {
 	edge2Found = 1;
