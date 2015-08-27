@@ -21,31 +21,29 @@
 #include <epicsExport.h>
 
 #include <opencv2/opencv.hpp>
-#include <opencv2/core/core.hpp>
-#include <opencv2/imgproc.hpp>
 
 static const char *driverName="NDPluginEdge";
 
 
 /** Color Mode to CV Matrix
 
-    NDInt8,     Signed 8-bit integer	
-    NDUInt8,    Unsigned 8-bit integer	
-    NDInt16,    Signed 16-bit integer	
-    NDUInt16,   Unsigned 16-bit integer	
-    NDInt32,    Signed 32-bit integer	
-    NDUInt32,   Unsigned 32-bit integer	
-    NDFloat32,  32-bit float		
-    NDFloat64   64-bit float		
+    NDInt8,     Signed 8-bit integer        
+    NDUInt8,    Unsigned 8-bit integer        
+    NDInt16,    Signed 16-bit integer        
+    NDUInt16,   Unsigned 16-bit integer        
+    NDInt32,    Signed 32-bit integer        
+    NDUInt32,   Unsigned 32-bit integer        
+    NDFloat32,  32-bit float                
+    NDFloat64   64-bit float                
 
-    NDColorModeMono,    Monochromatic image							
+    NDColorModeMono,    Monochromatic image                                                        
     NDColorModeBayer,   Bayer pattern image, 1 value per pixel but with color filter on detector
-    NDColorModeRGB1,    RGB image with pixel color interleave, data array is [3, NX, NY]	
-    NDColorModeRGB2,    RGB image with row color interleave, data array is [NX, 3, NY]		
-    NDColorModeRGB3,    RGB image with plane color interleave, data array is [NX, NY, 3]	
-    NDColorModeYUV444,  YUV image, 3 bytes encodes 1 RGB pixel					
-    NDColorModeYUV422,  YUV image, 4 bytes encodes 2 RGB pixel					
-    NDColorModeYUV411   YUV image, 6 bytes encodes 4 RGB pixels					
+    NDColorModeRGB1,    RGB image with pixel color interleave, data array is [3, NX, NY]        
+    NDColorModeRGB2,    RGB image with row color interleave, data array is [NX, 3, NY]                
+    NDColorModeRGB3,    RGB image with plane color interleave, data array is [NX, NY, 3]        
+    NDColorModeYUV444,  YUV image, 3 bytes encodes 1 RGB pixel                                        
+    NDColorModeYUV422,  YUV image, 4 bytes encodes 2 RGB pixel                                        
+    NDColorModeYUV411   YUV image, 6 bytes encodes 4 RGB pixels                                        
 
 
     NDArray         OpenCV
@@ -65,11 +63,7 @@ static const char *driverName="NDPluginEdge";
     NDBayer_GBRG    GB
     NDBayer_GRGB    GR
     NDBayer_BGGR    BG
-
-
-
 */
-
 
 
 /** Callback function that is called by the NDArray driver with new NDArray data.
@@ -78,164 +72,177 @@ static const char *driverName="NDPluginEdge";
   */
 void NDPluginEdge::processCallbacks(NDArray *pArray)
 {
-    /* This function does array processing.
-     * It is called with the mutex already locked.  It unlocks it during long calculations when private
-     * structures don't need to be protected.
-     */
-    NDArray *pScratch=NULL;
-    NDArrayInfo arrayInfo;
+  /* This function does array processing.
+   * It is called with the mutex already locked.  It unlocks it during long calculations when private
+   * structures don't need to be protected.
+   */
+  NDArray *pScratch=NULL;
+  NDArrayInfo arrayInfo;
 
-    int     i, j;
-    unsigned int     numRows, rowSize;
-    unsigned char *inData, *outData;
-    int    edge1;
-    int    edge1Found;
-    int    edge2;
-    int    edge2Found;
+  int i, j;
+  unsigned int numRows, rowSize;
+  unsigned char *inData, *outData;
+  int edge1;
+  int edge1Found;
+  int edge2;
+  int edge2Found;
 
-    //static const char* functionName = "processCallbacks";
+  static const char* functionName = "processCallbacks";
 
 
-    /* Call the base class method */
-    NDPluginDriver::processCallbacks(pArray);
+  /* Call the base class method */
+  NDPluginDriver::processCallbacks(pArray);
 
-    /* make the array something we understand			*/
-    this->pNDArrayPool->convert( pArray, &pScratch, NDUInt8);
+  /* make the array something we understand */
+  this->pNDArrayPool->convert( pArray, &pScratch, NDUInt8);
 
-    pScratch->getInfo(&arrayInfo);
+  pScratch->getInfo(&arrayInfo);
 
-    rowSize = pScratch->dims[arrayInfo.xDim].size;
-    numRows = pScratch->dims[arrayInfo.yDim].size;
+  rowSize = pScratch->dims[arrayInfo.xDim].size;
+  numRows = pScratch->dims[arrayInfo.yDim].size;
 
-    cv::Mat img = cv::Mat( numRows, rowSize, CV_8UC1);
+  cv::Mat img = cv::Mat( numRows, rowSize, CV_8UC1);
 
-    cv::Mat detected_edges;
-    double lowThreshold;
-    double thresholdRatio;
-    
-    getDoubleParam( NDPluginEdgeLowThreshold,   &lowThreshold);
-    getDoubleParam( NDPluginEdgeThresholdRatio, &thresholdRatio);
+  cv::Mat detected_edges;
+  double lowThreshold;
+  double thresholdRatio;
 
-    // We assume 8 bit mono image as input, at least for now.
+  getDoubleParam( NDPluginEdgeLowThreshold,   &lowThreshold);
+  getDoubleParam( NDPluginEdgeThresholdRatio, &thresholdRatio);
 
-    // Initialize the output data array
+  // We assume 8 bit mono image as input, at least for now.
+
+  // Initialize the output data array
+  //
+  inData  = (unsigned char *)pScratch->pData;
+  outData = (unsigned char *)img.data;
+  memcpy( outData, inData, arrayInfo.nElements * sizeof( *inData));
+
+  try {
+    // As suggested in the openCV examples, first slightly blur the image
     //
-    inData  = (unsigned char *)pScratch->pData;
-    outData = (unsigned char *)img.data;
-    memcpy( outData, inData, arrayInfo.nElements * sizeof( *inData));
+    cv::blur( img, detected_edges, cv::Size(3,3));
+  }
+  catch( cv::Exception &e) {
+    const char* err_msg = e.what();
 
-    try {
-      // As suggested in the openCV examples, first slightly blur the image
-      //
-      cv::blur( img, detected_edges, cv::Size(3,3));
+    asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, "%s::%s cv::blur exception:  %s\n", 
+        driverName, functionName, err_msg);
+    return;
+  }
+
+  try {
+    //
+    // Here is the edge detection routine.
+    //
+    cv::Canny( detected_edges, detected_edges, lowThreshold, thresholdRatio * lowThreshold, 3);
+  }
+  catch( cv::Exception &e) {
+    const char* err_msg = e.what();
+
+    asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, "%s::%s cv::Canny exception:  %s\n", 
+        driverName, functionName, err_msg);
+    return;
+  }
+
+  // Try to find the top pixel
+  j = rowSize/2;
+  edge1Found = 0;
+  edge2Found = 0;
+  outData = (unsigned char *)detected_edges.data;
+  for( i=0; (unsigned int)i<numRows; i++) {
+    if( *(outData + i*rowSize + j) != 0) {
+      edge1Found = 1;
+      break;
     }
-    catch( cv::Exception &e) {
-      const char* err_msg = e.what();
+  }
+  edge1 = i;
 
-      asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, "NDPluginEdge cv::blur exception:  %s\n", err_msg);
-      return;
+  setIntegerParam( NDPluginEdgeTopEdgeFound, edge1Found);
+  if( edge1Found)
+    setIntegerParam( NDPluginEdgeTopPixel, edge1);
+
+  // Maybe find the bottom pixel
+  for( i=numRows - 1; i>=0; i--) {
+    if( *(outData + i*rowSize + j) != 0) {
+      edge2Found = 1;
+      break;
     }
+  }
 
-    try {
-      //
-      // Here is the edge detection routine.
-      //
-      cv::Canny( detected_edges, detected_edges, lowThreshold, thresholdRatio * lowThreshold, 3);
+  edge2 = i;
+  setIntegerParam( NDPluginEdgeBottomEdgeFound, edge2Found);
+  if( edge2Found)
+    setIntegerParam( NDPluginEdgeBottomPixel, edge2);
+
+
+  if( edge1Found && edge2Found && edge1 < edge2) {
+    // Both edges found and they are not the same
+    //
+    setIntegerParam( NDPluginEdgeVerticalFound, 1);
+    setDoubleParam( NDPluginEdgeVerticalCenter, (edge1 + edge2)/2.0);
+    setIntegerParam(    NDPluginEdgeVerticalSize, edge2 - edge1);
+  } else {
+    // no edge found
+    setIntegerParam( NDPluginEdgeVerticalFound, 0);
+  }
+
+  // Find Left pixel
+  i = numRows/2;
+  edge1Found = 0;
+  edge2Found = 0;
+  for( j=0; (unsigned int)j<rowSize; j++) {
+    if( *(outData + i*rowSize + j) != 0) {
+      edge1Found = 1;
+      break;
     }
-    catch( cv::Exception &e) {
-      const char* err_msg = e.what();
+  }
+  edge1 = j;
 
-      asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, "NDPluginEdge cv::Canny exception:  %s\n", err_msg);
-      return;
+  setIntegerParam( NDPluginEdgeLeftEdgeFound, edge1Found);
+  if( edge1Found)
+    setIntegerParam( NDPluginEdgeLeftPixel, edge1);
+
+
+  // Maybe find right pixel
+  for( j=rowSize-1; j>=0; j--) {
+    if( *(outData + i*rowSize + j) != 0) {
+      edge2Found = 1;
+      break;
     }
+  }
+  edge2 = j;
 
-    // Try to find the top pixel
-    j = rowSize/2;
-    edge1Found = 0;
-    edge2Found = 0;
-    outData = (unsigned char *)detected_edges.data;
-    for( i=0; (unsigned int)i<numRows; i++) {
-      if( *(outData + i*rowSize + j) != 0) {
-	edge1Found = 1;
-	break;
-      }
-    }
-    edge1 = i;
+  setIntegerParam( NDPluginEdgeRightEdgeFound, edge2Found);
+  if( edge2Found)
+    setIntegerParam( NDPluginEdgeRightPixel, edge2);
 
-    setIntegerParam( NDPluginEdgeTopEdgeFound, edge1Found);
-    if( edge1Found)
-      setIntegerParam( NDPluginEdgeTopPixel, edge1);
+  if( edge1Found && edge2Found && edge1 < edge2) {
+    setIntegerParam( NDPluginEdgeHorizontalFound, 1);
+    setDoubleParam( NDPluginEdgeHorizontalCenter, (edge1 + edge2)/2.0);
+    setIntegerParam( NDPluginEdgeHorizontalSize, edge2 - edge1);
+  } else {
+    // no edge found
+    setIntegerParam( NDPluginEdgeHorizontalFound, 0);
+  }
 
-    // Maybe find the bottom pixel
-    for( i=numRows - 1; i>=0; i--) {
-      if( *(outData + i*rowSize + j) != 0) {
-	edge2Found = 1;
-	break;
-      }
-    }
+  int arrayCallbacks = 0;
+  getIntegerParam(NDArrayCallbacks, &arrayCallbacks);
+  if (arrayCallbacks == 1) {
+    inData  = (unsigned char *)detected_edges.data;
+    outData = (unsigned char *)pScratch->pData;
+    memcpy(outData, inData, arrayInfo.nElements * sizeof( *inData));
+    this->getAttributes(pScratch->pAttributeList);
+    this->unlock();
+    doCallbacksGenericPointer(pScratch, NDArrayData, 0);
+    this->lock();
+  }
 
-    edge2 = i;
-    setIntegerParam( NDPluginEdgeBottomEdgeFound, edge2Found);
-    if( edge2Found)
-      setIntegerParam( NDPluginEdgeBottomPixel, edge2);
+  if (NULL != pScratch)
+    pScratch->release();
 
-    
-    if( edge1Found && edge2Found && edge1 < edge2) {
-      // Both edges found and they are not the same
-      //
-      setIntegerParam( NDPluginEdgeVerticalFound, 1);
-      setDoubleParam( NDPluginEdgeVerticalCenter, (edge1 + edge2)/2.0);
-      setIntegerParam(    NDPluginEdgeVerticalSize, edge2 - edge1);
-    } else {
-      // no edge found
-      setIntegerParam( NDPluginEdgeVerticalFound, 0);
-    }
-
-    // Find Left pixel
-    i = numRows/2;
-    edge1Found = 0;
-    edge2Found = 0;
-    for( j=0; (unsigned int)j<rowSize; j++) {
-      if( *(outData + i*rowSize + j) > 100) {
-	edge1Found = 1;
-	break;
-      }
-    }
-    edge1 = j;
-
-    setIntegerParam( NDPluginEdgeLeftEdgeFound, edge1Found);
-    if( edge1Found)
-      setIntegerParam( NDPluginEdgeLeftPixel, edge1);
-
-
-    // Maybe find right pixel
-    for( j=rowSize-1; j>=0; j--) {
-      if( *(outData + i*rowSize + j) > 100) {
-	edge2Found = 1;
-	break;
-      }
-    }
-    edge2 = j;
-
-    setIntegerParam( NDPluginEdgeRightEdgeFound, edge2Found);
-    if( edge2Found)
-      setIntegerParam( NDPluginEdgeRightPixel, edge2);
-
-    if( edge1Found && edge2Found && edge1 < edge2) {
-      setIntegerParam( NDPluginEdgeHorizontalFound, 1);
-      setDoubleParam( NDPluginEdgeHorizontalCenter, (edge1 + edge2)/2.0);
-      setIntegerParam( NDPluginEdgeHorizontalSize, edge2 - edge1);
-    } else {
-      // no edge found
-      setIntegerParam( NDPluginEdgeHorizontalFound, 0);
-    }
-
-    if (NULL != pScratch)
-      pScratch->release();
-
-    callParamCallbacks();
+  callParamCallbacks();
 }
-
 
 
 
@@ -295,39 +302,6 @@ NDPluginEdge::NDPluginEdge(const char *portName, int queueSize, int blockingCall
   /* Try to connect to the array port */
   connectToArrayPort();
 }
-
-/** Called when asyn clients call pasynInt32->write().
-  * This function performs actions for some parameters.
-  * For all parameters it sets the value in the parameter library and calls any registered callbacks..
-  * \param[in] pasynUser pasynUser structure that encodes the reason and address.
-  * \param[in] value Value to write. */
-asynStatus NDPluginEdge::writeInt32(asynUser *pasynUser, epicsInt32 value)
-{
-    int function = pasynUser->reason;
-    int addr=0;
-    asynStatus status = asynSuccess;
-    static const char *functionName = "writeInt32";
-
-    status = getAddress(pasynUser, &addr); if (status != asynSuccess) return(status);
-
-    /* Set the parameter in the parameter library. */
-    status = (asynStatus) setIntegerParam(addr, function, value);
-
-    
-    /* Do callbacks so higher layers see any changes */
-    status = (asynStatus) callParamCallbacks(addr);
-    
-    if (status) 
-        epicsSnprintf(pasynUser->errorMessage, pasynUser->errorMessageSize, 
-                  "%s:%s: status=%d, function=%d, value=%d", 
-                  driverName, functionName, status, function, value);
-    else        
-        asynPrint(pasynUser, ASYN_TRACEIO_DRIVER, 
-              "%s:%s: function=%d, value=%d\n", 
-              driverName, functionName, function, value);
-    return status;
-}
-
 
 /** Configuration command */
 extern "C" int NDEdgeConfigure(const char *portName, int queueSize, int blockingCallbacks,
