@@ -86,6 +86,8 @@ void NDPluginEdge::processCallbacks(NDArray *pArray)
   int edge1Found;
   int edge2;
   int edge2Found;
+  double lowThreshold;
+  double thresholdRatio;
 
   static const char* functionName = "processCallbacks";
 
@@ -93,6 +95,12 @@ void NDPluginEdge::processCallbacks(NDArray *pArray)
   /* Call the base class method */
   NDPluginDriver::processCallbacks(pArray);
 
+  getDoubleParam( NDPluginEdgeLowThreshold,   &lowThreshold);
+  getDoubleParam( NDPluginEdgeThresholdRatio, &thresholdRatio);
+
+  /* Do the computationally expensive code with the lock released */
+  this->unlock();
+  
   /* make the array something we understand */
   this->pNDArrayPool->convert( pArray, &pScratch, NDUInt8);
 
@@ -104,13 +112,7 @@ void NDPluginEdge::processCallbacks(NDArray *pArray)
   cv::Mat img = cv::Mat( numRows, rowSize, CV_8UC1);
 
   cv::Mat detected_edges;
-  double lowThreshold;
-  double thresholdRatio;
 
-  getDoubleParam( NDPluginEdgeLowThreshold,   &lowThreshold);
-  getDoubleParam( NDPluginEdgeThresholdRatio, &thresholdRatio);
-
-  // We assume 8 bit mono image as input, at least for now.
 
   // Initialize the output data array
   //
@@ -128,6 +130,7 @@ void NDPluginEdge::processCallbacks(NDArray *pArray)
 
     asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, "%s::%s cv::blur exception:  %s\n", 
         driverName, functionName, err_msg);
+    this->lock();
     return;
   }
 
@@ -142,9 +145,14 @@ void NDPluginEdge::processCallbacks(NDArray *pArray)
 
     asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, "%s::%s cv::Canny exception:  %s\n", 
         driverName, functionName, err_msg);
+    this->lock();
     return;
   }
 
+  // Take the lock again since we are accessing the parameter library and 
+  // these calculations are not time consuming
+  this->lock();
+  
   // Try to find the top pixel
   j = rowSize/2;
   edge1Found = 0;
