@@ -1,14 +1,14 @@
 
 file {
-	name="/home/epics/devel/areaDetector-2-3/ADPluginEdge/edgeApp/op/adl/NDPluginEdge.adl"
-	version=030107
+	name="/home/epics/devel/areaDetector-2-6/ADPluginEdge/edgeApp/op/adl/NDPluginEdge.adl"
+	version=030109
 }
 display {
 	object {
-		x=507
-		y=517
+		x=477
+		y=58
 		width=775
-		height=575
+		height=650
 	}
 	clr=14
 	bclr=4
@@ -103,7 +103,7 @@ composite {
 		x=5
 		y=40
 		width=380
-		height=530
+		height=605
 	}
 	"composite name"=""
 	"composite file"="NDPluginBase.adl"
