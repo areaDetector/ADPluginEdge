@@ -3,6 +3,10 @@
 
 #include "NDPluginDriver.h"
 
+#define EDGE_VERSION      1
+#define EDGE_REVISION     1
+#define EDGE_MODIFICATION 0
+
 /* Output data type */
 #define NDPluginEdgeLowThresholdString       "LOW_THRESHOLD"     /* (asynFloat32, r/w) Canny sensitivity                      */
 #define NDPluginEdgeThresholdRatioString     "THRESHOLD_RATIO"   /* (asynFloat32, r/w) low threshold * ratio = high threshold   */
@@ -84,11 +88,8 @@ protected:
     /* difference between left and right positions                          */
     int NDPluginEdgeHorizontalSize;
 
-    #define LAST_NDPLUGIN_EDGE_PARAM NDPluginEdgeHorizontalSize
-
 private:
 
 };
-#define NUM_NDPLUGIN_EDGE_PARAMS ((int)(&LAST_NDPLUGIN_EDGE_PARAM - &FIRST_NDPLUGIN_EDGE_PARAM + 1))
     
 #endif
