@@ -279,11 +279,12 @@ NDPluginEdge::NDPluginEdge(const char *portName, int queueSize, int blockingCall
                          int priority, int stackSize)
     /* Invoke the base class constructor */
     : NDPluginDriver(portName, queueSize, blockingCallbacks,
-                   NDArrayPort, NDArrayAddr, 1, NUM_NDPLUGIN_EDGE_PARAMS, maxBuffers, maxMemory,
+                   NDArrayPort, NDArrayAddr, 1, 0, maxBuffers, maxMemory,
                    asynInt32ArrayMask | asynFloat64ArrayMask | asynGenericPointerMask,
                    asynInt32ArrayMask | asynFloat64ArrayMask | asynGenericPointerMask,
                    ASYN_MULTIDEVICE, 1, priority, stackSize)
 {
+  char versionString[20];
    //static const char *functionName = "NDPluginEdge";
     
   createParam( NDPluginEdgeLowThresholdString,     asynParamFloat64,  &NDPluginEdgeLowThreshold);
@@ -306,6 +307,10 @@ NDPluginEdge::NDPluginEdge(const char *portName, int queueSize, int blockingCall
   
   /* Set the plugin type string */
   setStringParam(NDPluginDriverPluginType, "NDPluginEdge");
+
+  epicsSnprintf(versionString, sizeof(versionString), "%d.%d.%d",
+                EDGE_VERSION, EDGE_REVISION, EDGE_MODIFICATION);
+  setStringParam(NDDriverVersion, versionString);
   
   /* Try to connect to the array port */
   connectToArrayPort();
