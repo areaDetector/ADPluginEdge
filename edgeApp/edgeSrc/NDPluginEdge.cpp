@@ -93,7 +93,7 @@ void NDPluginEdge::processCallbacks(NDArray *pArray)
 
 
   /* Call the base class method */
-  NDPluginDriver::processCallbacks(pArray);
+  NDPluginDriver::beginProcessCallbacks(pArray);
 
   getDoubleParam( NDPluginEdgeLowThreshold,   &lowThreshold);
   getDoubleParam( NDPluginEdgeThresholdRatio, &thresholdRatio);
