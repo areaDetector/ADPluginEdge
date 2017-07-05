@@ -15,6 +15,11 @@ files respectively, in the configure/ directory of the appropriate release of th
 
 Release Notes
 =============
+R1-2 (05-July-2017)
+----
+* Changed number of arguments passed to NDPluginDriver base class in constructor for ADCore R3-0.
+* Changed size of medm screen for new version of NDPluginBase.adl in ADCore R3-0.
+
 
 R1-1 (20-February-2017)
 ----
@@ -22,6 +27,7 @@ R1-1 (20-February-2017)
 * Added release tags for R1-0 and R1-1.
 * Increased size of medm screen for new version of NDPluginBase.adl in ADCore R2-6.
 * No longer pass number of plugin parameters, not required in ADCore R2-6.
+
 
 R1-0 (18-September-2015)
 ----
