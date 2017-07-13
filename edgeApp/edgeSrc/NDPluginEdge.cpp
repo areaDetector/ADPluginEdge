@@ -95,6 +95,19 @@ void NDPluginEdge::processCallbacks(NDArray *pArray)
   /* Call the base class method */
   NDPluginDriver::beginProcessCallbacks(pArray);
 
+  /* This plugin currently only works for 1-D or 2-D arrays */
+  switch (pArray->ndims) {
+    case 1:
+    case 2:
+      break;
+    default:
+      asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+        "%s::%s: error, input array dimensions must be 1 or 2\n",
+        driverName, functionName);
+      return;
+      break;
+  }
+
   getDoubleParam( NDPluginEdgeLowThreshold,   &lowThreshold);
   getDoubleParam( NDPluginEdgeThresholdRatio, &thresholdRatio);
 
@@ -322,10 +335,9 @@ extern "C" int NDEdgeConfigure(const char *portName, int queueSize, int blocking
                                  int maxBuffers, size_t maxMemory,
                                  int priority, int stackSize)
 {
-    new NDPluginEdge(portName, queueSize, blockingCallbacks, NDArrayPort, NDArrayAddr,
-                        maxBuffers, maxMemory, priority, stackSize);
-    return(asynSuccess);
-}
+    NDPluginEdge *pPlugin = new NDPluginEdge(portName, queueSize, blockingCallbacks, NDArrayPort, NDArrayAddr,
+                                              maxBuffers, maxMemory, priority, stackSize);
+    return pPlugin->start();
 
 /* EPICS iocsh shell commands */
 static const iocshArg initArg0 = { "portName",iocshArgString};
