@@ -241,9 +241,7 @@ void NDPluginEdge::processCallbacks(NDArray *pArray)
     outData = (unsigned char *)pScratch->pData;
     memcpy(outData, inData, arrayInfo.nElements * sizeof( *inData));
     this->getAttributes(pScratch->pAttributeList);
-    this->unlock();
     doCallbacksGenericPointer(pScratch, NDArrayData, 0);
-    this->lock();
   }
 
   if (NULL != pScratch)
