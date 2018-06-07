@@ -12,3 +12,4 @@ configure/*.local
 O.*/
 *~
 *.swp
+.project
