@@ -57,7 +57,7 @@ VerticalSize       | Difference between BottomPixel and TopPixel
 
 - Release notes.
   
-  For this implementation the image must be 8 bit monochromatic.
+  For this implementation the image must be 8 bit monochromatic or RGB3.
   Fortunately there are some other plugins (ColorConvert and Process)
   that allow you to convert to this format.
 

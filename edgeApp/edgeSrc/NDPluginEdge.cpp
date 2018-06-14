@@ -91,7 +91,6 @@ void NDPluginEdge::processCallbacks(NDArray *pArray)
 
   static const char* functionName = "processCallbacks";
 
-
   /* Call the base class method */
   NDPluginDriver::beginProcessCallbacks(pArray);
 
@@ -100,9 +99,32 @@ void NDPluginEdge::processCallbacks(NDArray *pArray)
 
   /* Do the computationally expensive code with the lock released */
   this->unlock();
-  
+
+  pArray->getInfo(&arrayInfo);
+  rowSize = pArray->dims[arrayInfo.xDim].size;
+  numRows = pArray->dims[arrayInfo.yDim].size;
+
+  // Test if this array has the color dimension in the correct place
+  // Mono image is OK, or RGB with color in the third dimension
+  // TODO: Fix the conversion process to work with any input format.
+  if ((pArray->ndims == 3) && (arrayInfo.colorDim != 2))
+  {
+    asynPrint(
+        this->pasynUserSelf, 
+        ASYN_TRACE_ERROR, 
+        "%s::%s Please convert input image to mono or RGB3\n", 
+        driverName, 
+        functionName);
+    this->lock();
+    return;
+  }
+  // This plugin works on a monochromatic image
+  NDDimension_t scratch_dims[2];
+  pScratch->initDimension(&scratch_dims[0], rowSize);
+  pScratch->initDimension(&scratch_dims[1], numRows);
+
   /* make the array something we understand */
-  this->pNDArrayPool->convert( pArray, &pScratch, NDUInt8);
+  this->pNDArrayPool->convert( pArray, &pScratch, NDUInt8, scratch_dims);
 
   pScratch->getInfo(&arrayInfo);
 
@@ -113,16 +135,14 @@ void NDPluginEdge::processCallbacks(NDArray *pArray)
 
   cv::Mat detected_edges;
 
-
   // Initialize the output data array
   //
   inData  = (unsigned char *)pScratch->pData;
   outData = (unsigned char *)img.data;
-  memcpy( outData, inData, arrayInfo.nElements * sizeof( *inData));
+  memcpy( outData, inData, arrayInfo.nElements * sizeof(unsigned char));
 
   try {
     // As suggested in the openCV examples, first slightly blur the image
-    //
     cv::blur( img, detected_edges, cv::Size(3,3));
   }
   catch( cv::Exception &e) {
@@ -135,9 +155,7 @@ void NDPluginEdge::processCallbacks(NDArray *pArray)
   }
 
   try {
-    //
     // Here is the edge detection routine.
-    //
     cv::Canny( detected_edges, detected_edges, lowThreshold, thresholdRatio * lowThreshold, 3);
   }
   catch( cv::Exception &e) {
@@ -152,7 +170,7 @@ void NDPluginEdge::processCallbacks(NDArray *pArray)
   // Take the lock again since we are accessing the parameter library and 
   // these calculations are not time consuming
   this->lock();
-  
+
   // Try to find the top pixel
   j = rowSize/2;
   edge1Found = 0;
@@ -239,7 +257,7 @@ void NDPluginEdge::processCallbacks(NDArray *pArray)
   if (arrayCallbacks == 1) {
     inData  = (unsigned char *)detected_edges.data;
     outData = (unsigned char *)pScratch->pData;
-    memcpy(outData, inData, arrayInfo.nElements * sizeof( *inData));
+    memcpy(outData, inData, arrayInfo.nElements * sizeof(unsigned char));
     this->getAttributes(pScratch->pAttributeList);
     doCallbacksGenericPointer(pScratch, NDArrayData, 0);
   }
@@ -253,38 +271,38 @@ void NDPluginEdge::processCallbacks(NDArray *pArray)
 
 
 /** Constructor for NDPluginEdge; most parameters are simply passed to NDPluginDriver::NDPluginDriver.
-  * After calling the base class constructor this method sets reasonable default values for all of the
-  * parameters.
-  * \param[in] portName The name of the asyn port driver to be created.
-  * \param[in] queueSize The number of NDArrays that the input queue for this plugin can hold when
-  *            NDPluginDriverBlockingCallbacks=0.  Larger queues can decrease the number of dropped arrays,
-  *            at the expense of more NDArray buffers being allocated from the underlying driver's NDArrayPool.
-  * \param[in] blockingCallbacks Initial setting for the NDPluginDriverBlockingCallbacks flag.
-  *            0=callbacks are queued and executed by the callback thread; 1 callbacks execute in the thread
-  *            of the driver doing the callbacks.
-  * \param[in] NDArrayPort Name of asyn port driver for initial source of NDArray callbacks.
-  * \param[in] NDArrayAddr asyn port driver address for initial source of NDArray callbacks.
-  * \param[in] maxBuffers The maximum number of NDArray buffers that the NDArrayPool for this driver is
-  *            allowed to allocate. Set this to -1 to allow an unlimited number of buffers.
-  * \param[in] maxMemory The maximum amount of memory that the NDArrayPool for this driver is
-  *            allowed to allocate. Set this to -1 to allow an unlimited amount of memory.
-  * \param[in] priority The thread priority for the asyn port driver thread if ASYN_CANBLOCK is set in asynFlags.
-  * \param[in] stackSize The stack size for the asyn port driver thread if ASYN_CANBLOCK is set in asynFlags.
-  */
+ * After calling the base class constructor this method sets reasonable default values for all of the
+ * parameters.
+ * \param[in] portName The name of the asyn port driver to be created.
+ * \param[in] queueSize The number of NDArrays that the input queue for this plugin can hold when
+ *            NDPluginDriverBlockingCallbacks=0.  Larger queues can decrease the number of dropped arrays,
+ *            at the expense of more NDArray buffers being allocated from the underlying driver's NDArrayPool.
+ * \param[in] blockingCallbacks Initial setting for the NDPluginDriverBlockingCallbacks flag.
+ *            0=callbacks are queued and executed by the callback thread; 1 callbacks execute in the thread
+ *            of the driver doing the callbacks.
+ * \param[in] NDArrayPort Name of asyn port driver for initial source of NDArray callbacks.
+ * \param[in] NDArrayAddr asyn port driver address for initial source of NDArray callbacks.
+ * \param[in] maxBuffers The maximum number of NDArray buffers that the NDArrayPool for this driver is
+ *            allowed to allocate. Set this to -1 to allow an unlimited number of buffers.
+ * \param[in] maxMemory The maximum amount of memory that the NDArrayPool for this driver is
+ *            allowed to allocate. Set this to -1 to allow an unlimited amount of memory.
+ * \param[in] priority The thread priority for the asyn port driver thread if ASYN_CANBLOCK is set in asynFlags.
+ * \param[in] stackSize The stack size for the asyn port driver thread if ASYN_CANBLOCK is set in asynFlags.
+ */
 NDPluginEdge::NDPluginEdge(const char *portName, int queueSize, int blockingCallbacks,
-                         const char *NDArrayPort, int NDArrayAddr,
-                         int maxBuffers, size_t maxMemory,
-                         int priority, int stackSize)
-    /* Invoke the base class constructor */
-    : NDPluginDriver(portName, queueSize, blockingCallbacks,
-                   NDArrayPort, NDArrayAddr, 1, maxBuffers, maxMemory,
-                   asynInt32ArrayMask | asynFloat64ArrayMask | asynGenericPointerMask,
-                   asynInt32ArrayMask | asynFloat64ArrayMask | asynGenericPointerMask,
-                   ASYN_MULTIDEVICE, 1, priority, stackSize, 1)
+    const char *NDArrayPort, int NDArrayAddr,
+    int maxBuffers, size_t maxMemory,
+    int priority, int stackSize)
+  /* Invoke the base class constructor */
+  : NDPluginDriver(portName, queueSize, blockingCallbacks,
+      NDArrayPort, NDArrayAddr, 1, maxBuffers, maxMemory,
+      asynInt32ArrayMask | asynFloat64ArrayMask | asynGenericPointerMask,
+      asynInt32ArrayMask | asynFloat64ArrayMask | asynGenericPointerMask,
+      0, 1, priority, stackSize, 1)
 {
   char versionString[20];
-   //static const char *functionName = "NDPluginEdge";
-    
+  //static const char *functionName = "NDPluginEdge";
+
   createParam( NDPluginEdgeLowThresholdString,     asynParamFloat64,  &NDPluginEdgeLowThreshold);
   createParam( NDPluginEdgeThresholdRatioString,   asynParamFloat64,  &NDPluginEdgeThresholdRatio);
   createParam( NDPluginEdgeVerticalFoundString,    asynParamInt32,    &NDPluginEdgeVerticalFound);
@@ -301,28 +319,28 @@ NDPluginEdge::NDPluginEdge(const char *portName, int queueSize, int blockingCall
   createParam( NDPluginEdgeRightPixelString,       asynParamInt32,    &NDPluginEdgeRightPixel);
   createParam( NDPluginEdgeHorizontalCenterString, asynParamFloat64,  &NDPluginEdgeHorizontalCenter);
   createParam( NDPluginEdgeHorizontalSizeString,   asynParamInt32,    &NDPluginEdgeHorizontalSize);
-  
-  
+
+
   /* Set the plugin type string */
   setStringParam(NDPluginDriverPluginType, "NDPluginEdge");
 
   epicsSnprintf(versionString, sizeof(versionString), "%d.%d.%d",
-                EDGE_VERSION, EDGE_REVISION, EDGE_MODIFICATION);
+      EDGE_VERSION, EDGE_REVISION, EDGE_MODIFICATION);
   setStringParam(NDDriverVersion, versionString);
-  
+
   /* Try to connect to the array port */
   connectToArrayPort();
 }
 
 /** Configuration command */
 extern "C" int NDEdgeConfigure(const char *portName, int queueSize, int blockingCallbacks,
-                                 const char *NDArrayPort, int NDArrayAddr,
-                                 int maxBuffers, size_t maxMemory,
-                                 int priority, int stackSize)
+    const char *NDArrayPort, int NDArrayAddr,
+    int maxBuffers, size_t maxMemory,
+    int priority, int stackSize)
 {
-    new NDPluginEdge(portName, queueSize, blockingCallbacks, NDArrayPort, NDArrayAddr,
-                        maxBuffers, maxMemory, priority, stackSize);
-    return(asynSuccess);
+  NDPluginEdge *pPlugin = new NDPluginEdge(portName, queueSize, blockingCallbacks, NDArrayPort, NDArrayAddr,
+      maxBuffers, maxMemory, priority, stackSize);
+  return pPlugin->start();
 }
 
 /* EPICS iocsh shell commands */
@@ -336,27 +354,27 @@ static const iocshArg initArg6 = { "maxMemory",iocshArgInt};
 static const iocshArg initArg7 = { "priority",iocshArgInt};
 static const iocshArg initArg8 = { "stackSize",iocshArgInt};
 static const iocshArg * const initArgs[] = {&initArg0,
-                                            &initArg1,
-                                            &initArg2,
-                                            &initArg3,
-                                            &initArg4,
-                                            &initArg5,
-                                            &initArg6,
-                                            &initArg7,
-                                            &initArg8};
+  &initArg1,
+  &initArg2,
+  &initArg3,
+  &initArg4,
+  &initArg5,
+  &initArg6,
+  &initArg7,
+  &initArg8};
 static const iocshFuncDef initFuncDef = {"NDEdgeConfigure",9,initArgs};
 static void initCallFunc(const iocshArgBuf *args)
 {
-    NDEdgeConfigure(args[0].sval, args[1].ival, args[2].ival,
-                       args[3].sval, args[4].ival, args[5].ival,
-                       args[6].ival, args[7].ival, args[8].ival);
+  NDEdgeConfigure(args[0].sval, args[1].ival, args[2].ival,
+      args[3].sval, args[4].ival, args[5].ival,
+      args[6].ival, args[7].ival, args[8].ival);
 }
 
 extern "C" void NDEdgeRegister(void)
 {
-    iocshRegister(&initFuncDef,initCallFunc);
+  iocshRegister(&initFuncDef,initCallFunc);
 }
 
 extern "C" {
-epicsExportRegistrar(NDEdgeRegister);
+  epicsExportRegistrar(NDEdgeRegister);
 }
