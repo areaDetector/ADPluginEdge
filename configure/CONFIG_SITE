@@ -24,7 +24,10 @@ CHECK_RELEASE = YES
 # To install files into a location other than $(TOP) define
 #   INSTALL_LOCATION here.
 #INSTALL_LOCATION=</path/name/to/install/top>
-INSTALL_LOCATION=$(AREA_DETECTOR)/ADCore
+#
+# This does not work in EPICS 7.0.1.  
+# Running "make uninstall" will delete things in the INSTALL_LOCATION, including the configure/ directory!
+#INSTALL_LOCATION=$(AREA_DETECTOR)/ADCore
 
 # Set this when your IOC and the host use different paths
 #   to access the application. This will be needed to boot
