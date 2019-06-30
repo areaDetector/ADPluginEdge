@@ -255,12 +255,8 @@ void NDPluginEdge::processCallbacks(NDArray *pArray)
     inData  = (unsigned char *)detected_edges.data;
     outData = (unsigned char *)pScratch->pData;
     memcpy(outData, inData, arrayInfo.nElements * sizeof(unsigned char));
-    this->getAttributes(pScratch->pAttributeList);
-    doCallbacksGenericPointer(pScratch, NDArrayData, 0);
   }
-
-  if (NULL != pScratch)
-    pScratch->release();
+  endProcessCallbacks(pScratch, false, true);
 
   callParamCallbacks();
 }
