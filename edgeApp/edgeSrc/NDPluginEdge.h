@@ -4,7 +4,7 @@
 #include "NDPluginDriver.h"
 
 #define EDGE_VERSION      1
-#define EDGE_REVISION     2
+#define EDGE_REVISION     3
 #define EDGE_MODIFICATION 0
 
 /* Output data type */
