@@ -1,0 +1,615 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<display version="2.0.0">
+  <name>NDPluginEdge</name>
+  <x>477</x>
+  <y>58</y>
+  <width>775</width>
+  <background_color>
+    <color red="187" green="187" blue="187">
+    </color>
+  </background_color>
+  <grid_visible>false</grid_visible>
+  <grid_step_x>5</grid_step_x>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #6</name>
+    <y>9</y>
+    <width>775</width>
+    <height>26</height>
+    <line_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="embedded" version="2.0.0">
+    <name>composite #9</name>
+    <file>NDPluginBase.bob</file>
+    <x>5</x>
+    <y>40</y>
+    <width>380</width>
+    <height>555</height>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #11</name>
+    <text>$(P)$(R)</text>
+    <y>10</y>
+    <width>775</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #14</name>
+    <x>390</x>
+    <y>40</y>
+    <width>380</width>
+    <height>364</height>
+    <line_width>1</line_width>
+    <line_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </background_color>
+    <transparent>true</transparent>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #17</name>
+    <text>Low Threshold</text>
+    <x>475</x>
+    <y>50</y>
+    <width>130</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #20</name>
+    <pv_name>$(P)$(R)LowThreshold</pv_name>
+    <x>610</x>
+    <y>50</y>
+    <width>60</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #24</name>
+    <pv_name>$(P)$(R)LowThreshold_RBV</pv_name>
+    <x>675</x>
+    <y>51</y>
+    <width>60</width>
+    <height>18</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #28</name>
+    <text>Threshold Ratio</text>
+    <x>455</x>
+    <y>75</y>
+    <width>150</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #31</name>
+    <pv_name>$(P)$(R)ThresholdRatio</pv_name>
+    <x>610</x>
+    <y>75</y>
+    <width>60</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #35</name>
+    <pv_name>$(P)$(R)ThresholdRatio_RBV</pv_name>
+    <x>675</x>
+    <y>76</y>
+    <width>60</width>
+    <height>18</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #39</name>
+    <text>Horizontal Object Found</text>
+    <x>461</x>
+    <y>265</y>
+    <width>230</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="ellipse" version="2.0.0">
+    <name>oval #42</name>
+    <x>696</x>
+    <y>265</y>
+    <width>20</width>
+    <height>20</height>
+    <line_color>
+      <color red="0" green="216" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="0" green="216" blue="0">
+      </color>
+    </background_color>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)$(R)HorizontalFound</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #46</name>
+    <text>Left Pixel</text>
+    <x>532</x>
+    <y>289</y>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #49</name>
+    <pv_name>$(P)$(R)LeftPixel</pv_name>
+    <x>637</x>
+    <y>289</y>
+    <width>54</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>2</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="ellipse" version="2.0.0">
+    <name>oval #53</name>
+    <x>696</x>
+    <y>289</y>
+    <width>20</width>
+    <height>20</height>
+    <line_color>
+      <color red="0" green="216" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="0" green="216" blue="0">
+      </color>
+    </background_color>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)$(R)LeftEdgeFound</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #57</name>
+    <text>Right Pixel</text>
+    <x>522</x>
+    <y>314</y>
+    <width>110</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #60</name>
+    <pv_name>$(P)$(R)RightPixel</pv_name>
+    <x>637</x>
+    <y>314</y>
+    <width>54</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>2</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="ellipse" version="2.0.0">
+    <name>oval #64</name>
+    <x>696</x>
+    <y>314</y>
+    <width>20</width>
+    <height>20</height>
+    <line_color>
+      <color red="0" green="216" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="0" green="216" blue="0">
+      </color>
+    </background_color>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)$(R)RightEdgeFound</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #68</name>
+    <text>Horizontal Center</text>
+    <x>462</x>
+    <y>339</y>
+    <width>170</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #71</name>
+    <pv_name>$(P)$(R)HorizontalCenter</pv_name>
+    <x>637</x>
+    <y>339</y>
+    <width>54</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>2</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #75</name>
+    <text>Horizontal Size</text>
+    <x>480</x>
+    <y>364</y>
+    <width>150</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #78</name>
+    <pv_name>$(P)$(R)HorizontalSize</pv_name>
+    <x>635</x>
+    <y>364</y>
+    <width>54</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>2</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #82</name>
+    <text>Top Pixel</text>
+    <x>542</x>
+    <y>150</y>
+    <width>90</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #85</name>
+    <pv_name>$(P)$(R)TopPixel</pv_name>
+    <x>637</x>
+    <y>150</y>
+    <width>54</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>2</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="ellipse" version="2.0.0">
+    <name>oval #89</name>
+    <x>696</x>
+    <y>150</y>
+    <width>20</width>
+    <height>20</height>
+    <line_color>
+      <color red="0" green="216" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="0" green="216" blue="0">
+      </color>
+    </background_color>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)$(R)TopEdgeFound</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #93</name>
+    <text>Bottom Pixel</text>
+    <x>512</x>
+    <y>175</y>
+    <width>120</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #96</name>
+    <pv_name>$(P)$(R)BottomPixel</pv_name>
+    <x>637</x>
+    <y>175</y>
+    <width>54</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>2</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="ellipse" version="2.0.0">
+    <name>oval #100</name>
+    <x>696</x>
+    <y>175</y>
+    <width>20</width>
+    <height>20</height>
+    <line_color>
+      <color red="0" green="216" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="0" green="216" blue="0">
+      </color>
+    </background_color>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)$(R)BottomEdgeFound</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #104</name>
+    <text>Vertical Center</text>
+    <x>482</x>
+    <y>200</y>
+    <width>150</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #107</name>
+    <pv_name>$(P)$(R)VerticalCenter</pv_name>
+    <x>637</x>
+    <y>200</y>
+    <width>54</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>2</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #111</name>
+    <text>Vertical Size</text>
+    <x>502</x>
+    <y>225</y>
+    <width>130</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #114</name>
+    <pv_name>$(P)$(R)VerticalSize</pv_name>
+    <x>637</x>
+    <y>225</y>
+    <width>54</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>2</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #118</name>
+    <text>Vertical Object Found</text>
+    <x>481</x>
+    <y>125</y>
+    <width>210</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="ellipse" version="2.0.0">
+    <name>oval #121</name>
+    <x>696</x>
+    <y>125</y>
+    <width>20</width>
+    <height>20</height>
+    <line_color>
+      <color red="0" green="216" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="0" green="216" blue="0">
+      </color>
+    </background_color>
+    <rules>
+      <rule name="vis_calc" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)$(R)VerticalFound</pv_name>
+      </rule>
+    </rules>
+  </widget>
+</display>
